@@ -6,7 +6,22 @@ import androidx.lifecycle.ViewModel
 import com.nr.cvsflickrcodechallenge.data.Photo
 import com.nr.cvsflickrcodechallenge.repository.PhotoRepo
 
+/**
+ * ViewModel for managing and providing data related to photos from the API.
+ *
+ * This class interacts with the [PhotoRepo] to fetch photos and exposes them as [LiveData] to the UI.
+ * It also handles user input for searching photos based on tags.
+ *
+ * @property searchText A [LiveData] object representing the current text in the search bar.
+ *                     The UI observes this property to update the search results when the text changes.
+ * @property photos A [LiveData] object holding a list of [Photo] objects retrieved from the Flickr API.
+ *                 The UI observes this property to display the photos.
+ *
+ * @author Neegbeah Reeves
+ */
+
 class PhotoViewModel: ViewModel() {
+    //fetching photo data from the API.
     private val repository: PhotoRepo = PhotoRepo()
 
     private val _searchText = MutableLiveData("")

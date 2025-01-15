@@ -1,9 +1,11 @@
-package com.nr.cvsflickrcodechallenge
+package com.nr.cvsflickrcodechallenge.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,11 +33,10 @@ import com.nr.cvsflickrcodechallenge.viewmodel.PhotoViewModel
 import kotlinx.coroutines.launch
 
 /**
- * Main activity for the Flickr image search application.
  *
  * This activity serves as the entry point for the app and is responsible for
- * setting up the user interface using Jetpack Compose. It utilizes a
- * [FlickrViewModel] to manage the data and state of the UI.
+ * setting up the user interface using Jetpack Compose. It utilizes
+ * [PhotoViewModel] to manage the data/state of the UI.
  *
  * @author Neegbeah Reeves
  */
@@ -50,8 +52,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
-
+// TODO: Set as Separate View Class if possible
 @Composable
 fun PhotoApp() {
     val viewModel: PhotoViewModel = viewModel() // Get the view model instance
@@ -102,13 +103,15 @@ fun SearchBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
 /**
  * Composable function for displaying a grid of photos.
  *
- * This function displays a grid of images fetched from the Flickr API using
+ * This function displays a grid of images fetched from the API using
  * [LazyVerticalGrid]. Each image is represented by a [PhotoItem] composable.
  *
  * @param photos The list of [Photo] objects to display in the grid.
  */
 @Composable
 fun PhotoGrid(photos: List<Photo>) {
+    val context = LocalContext.current
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -116,7 +119,17 @@ fun PhotoGrid(photos: List<Photo>) {
         modifier = Modifier.padding(4.dp)
     ) {
         items(photos) { photo ->
-            PhotoItem(photo)
+            PhotoItem(photo){
+                // Launch PhotoDetailPage when an item is clicked
+                val intent = Intent(context, PhotoDetailPage::class.java).apply {
+                    putExtra("imageUrl", photo.media.m)
+                    putExtra("imageTitle", photo.title)
+                    putExtra("imageDate", photo.dateTaken)
+                    putExtra("imageAuthor", photo.author)
+                    putExtra("imageDesc", photo.description)
+                }
+                context.startActivity(intent)
+            }
         }
     }
 }
@@ -132,11 +145,13 @@ fun PhotoGrid(photos: List<Photo>) {
  */
 
 @Composable
-fun PhotoItem(photo: Photo) {
-    Card(modifier = Modifier.padding(4.dp)) {
+fun PhotoItem(photo: Photo, onItemClick: (Photo) -> Unit) {
+    Card(modifier = Modifier
+        .padding(4.dp)
+        .clickable{ onItemClick(photo) }) {
         // Use AsyncImage from Coil to load and display the image
         AsyncImage(
-            model = photo.media?.m, // Image URL from the Flickr API
+            model = photo.media.m, // Image URL from the Flickr API
             contentDescription = photo.title,
             modifier = Modifier.fillMaxWidth()
         )
@@ -144,8 +159,8 @@ fun PhotoItem(photo: Photo) {
 }
 
 
-@Preview (name = "School Card", device = Devices.NEXUS_6P, showSystemUi = true)
+@Preview (name = "Photo Viewer", device = Devices.PIXEL_FOLD, showSystemUi = true)
 @Composable
-fun cardItemPreview(){
+fun AppPreview(){
     PhotoApp()
 }

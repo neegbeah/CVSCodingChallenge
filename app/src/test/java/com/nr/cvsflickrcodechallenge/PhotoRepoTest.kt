@@ -5,7 +5,7 @@ import com.nr.cvsflickrcodechallenge.data.Media
 import com.nr.cvsflickrcodechallenge.data.Photo
 import com.nr.cvsflickrcodechallenge.data.PhotoResponse
 import com.nr.cvsflickrcodechallenge.repository.PhotoRepo
-import com.nr.cvsflickrcodechallenge.retrofit.service.api.PhotoApi
+import com.nr.cvsflickrcodechallenge.retrofit.api.PhotoApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
